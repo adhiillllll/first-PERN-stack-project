@@ -92,5 +92,20 @@ router.post('/logout', (req,res) => {
     res.json({message: 'Logged out successfully'})
 })
 
+router.post('/', async(req,res) => {
+    const { name,course,email } = req.body
+
+    if( !name|| !course|| !email ) {
+        return res.status(400).json({message: "please provide all required fields"})
+    }
+
+    const newStudent = await pool.query(
+        'INSERT INTO student( name, course, email ) VALUES ( $1,$2,$3 ) RETURNING id, name, course',
+        [name,course,email]
+    )
+
+    return res.status(201).json({ student: newStudent.rows[0] })
+})
+
 
 export default router
